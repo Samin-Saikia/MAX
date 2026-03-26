@@ -225,7 +225,7 @@ When suggesting new nodes or connections, format them clearly.
     try:
         resp = requests.post("https://api.groq.com/openai/v1/chat/completions",
             headers={"Authorization": f"Bearer {GROQ_API_KEY}", "Content-Type": "application/json"},
-            json={"model": "llama-3.3-70b-versatile", "messages": [{"role":"system","content":system_prompt}] + messages, "max_tokens": 1024},
+            json={"model": "groq/compound", "messages": [{"role":"system","content":system_prompt}] + messages, "max_tokens": 1024},
             timeout=30)
         result = resp.json()
         reply = result["choices"][0]["message"]["content"]

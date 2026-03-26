@@ -1,11 +1,26 @@
-# ⚡ MAX — Knowledge Universe
+# MAX — Knowledge Universe  v2.0
 
-A spatial, AI-powered personal knowledge system.
+A spatial, AI-powered personal knowledge system.  
 Dark cosmic JARVIS aesthetic. Groq AI + Serper Search + Flask + SQLite.
 
 ---
 
-## 📁 Project Structure
+## What's new in v2.0
+
+- **SVG icons** — all emoji replaced with crisp inline SVG throughout the UI
+- **Shape-based node icons** — concept (diamond), idea (star), memory (ring), topic (hexagon), research (crosshair)
+- **Minimap** — live scaled overview of your entire universe with viewport indicator
+- **Export** — download your full universe as JSON (`E` key or `export` command)
+- **LINK button** — dedicated connect-mode button in the top bar
+- **CENTER button** — reset view to fit all nodes (`Space` key)
+- **Improved keyboard shortcuts** — `N` new node, `Space` center, `Shift+C` connect mode, `E` export, `Esc` close
+- **Refined visual design** — tighter spacing, crisper borders, smoother animations, scan-line overlay
+- **Better randomPosition** — new nodes spread out as universe grows, avoiding pile-up
+- **Error handling** — all API calls wrapped with try/catch, toast on failure
+
+---
+
+## Project Structure
 
 ```
 max/
@@ -19,13 +34,13 @@ max/
     ├── css/
     │   └── style.css       # Cosmic dark theme
     └── js/
-        ├── universe.js     # Canvas engine (nodes, edges, rendering)
+        ├── universe.js     # Canvas engine (nodes, edges, minimap, rendering)
         └── app.js          # App controller (UI, API, state)
 ```
 
 ---
 
-## 🚀 Setup
+## Setup
 
 ### 1. Install dependencies
 ```bash
@@ -34,64 +49,55 @@ pip install -r requirements.txt
 
 ### 2. Set API keys
 ```bash
-# Linux / Mac
-export GROQ_API_KEY=your_groq_key_here
-export SERPER_API_KEY=your_serper_key_here
-
 # Windows
 set GROQ_API_KEY=your_groq_key_here
 set SERPER_API_KEY=your_serper_key_here
+
+# Linux / Mac
+export GROQ_API_KEY=your_groq_key_here
+export SERPER_API_KEY=your_serper_key_here
 ```
 
-Get keys:
+Keys:
 - Groq (free): https://console.groq.com
 - Serper (free tier): https://serper.dev
 
-### 3. Run MAX
+### 3. Run
 ```bash
 python app.py
 ```
-
 Open: http://localhost:5000
 
 ---
 
-## 🎮 Controls
+## Controls
 
 | Action | How |
 |--------|-----|
-| Add node | `+ NODE` button, double-click canvas, or type `add <title>` |
+| Add node | `+ NODE` button, `N` key, double-click canvas, or `add <title>` |
 | Select node | Single click |
 | Move node | Drag |
-| Pan universe | Drag on empty space |
+| Pan universe | Drag empty space |
 | Zoom | Scroll wheel |
-| Connect nodes | `SHIFT+CLICK` → click source, click target |
-| AI expand node | Select node → `⚡ AI EXPAND` |
-| Ask MAX | `◈ ASK MAX` button or type `ask <question>` |
-| Live search | Select node → `🔍 RESEARCH` |
-| Auto-link | `⚡ AUTO-LINK` — AI maps connections across all nodes |
-| Keyboard | `N` = new node, `ESC` = close panels |
+| Connect nodes | `LINK` button or `Shift+C`, then click source → target |
+| AI expand | Select node → `AI EXPAND` |
+| Ask MAX | `ASK MAX` button or `ask <question>` in command bar |
+| Live search | Select node → `RESEARCH` |
+| Auto-link | `AUTO-LINK` button — AI maps connections across all nodes |
+| Center view | `Space` key or CENTER button |
+| Export universe | `E` key or type `export` |
+| Close / deselect | `Esc` |
 
 ---
 
-## ✨ Features
+## Commands (type in command bar)
 
-- **Universe Canvas** — infinite 2D space, animated nodes with glow, pulsing edges
-- **Node Types** — Concept, Idea, Memory, Topic, Research (each with unique color)
-- **AI Core (Groq)** — Chat with your universe, expand nodes, auto-detect connections
-- **Live Research (Serper)** — Search web, import results as new nodes
-- **Memory System** — Store persistent facts/goals that MAX always knows
-- **Auto-Link** — AI scans all nodes and suggests meaningful connections
-- **Command Bar** — Type commands like `add quantum computing` or `ask what connects AI and consciousness`
-- **Cosmic HUD** — JARVIS-style dark space aesthetic, boot sequence, live clock
-
----
-
-## 🔮 Planned Expansions
-
-- Voice commands (Web Speech API)
-- Node clustering / galaxy view
-- Timeline mode
-- Export universe as graph JSON
-- Multiple universes / workspaces
-- Collaborative mode
+```
+add <title>       — open create modal with title pre-filled
+ask <question>    — send to MAX AI
+search <query>    — web research
+connect           — enter connect mode
+center            — reset view
+export            — download universe JSON
+memory            — open memory panel
+```

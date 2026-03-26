@@ -10,6 +10,9 @@
 </head>
 <body>
 
+<!-- SCAN LINE OVERLAY -->
+<div id="scan-line"></div>
+
 <!-- BOOT SCREEN -->
 <div id="boot-screen">
   <div class="boot-content">
@@ -32,62 +35,123 @@
         <span class="sep">|</span>
         <span id="edge-count">0 LINKS</span>
         <span class="sep">|</span>
-        <span id="mem-count">0 MEMORIES</span>
+        <span id="mem-count">0 MEM</span>
       </div>
     </div>
     <div class="tb-center">
-      <input type="text" id="cmd-bar" placeholder="// COMMAND — search, ask, or create..." autocomplete="off">
-      <button class="cmd-btn" id="cmd-exec">EXECUTE</button>
+      <input type="text" id="cmd-bar" placeholder="// COMMAND — add, search, ask, connect..." autocomplete="off" spellcheck="false">
+      <button class="cmd-btn" id="cmd-exec">
+        <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 2l8 4-8 4V2z" fill="currentColor"/></svg>
+        RUN
+      </button>
     </div>
     <div class="tb-right">
-      <button class="hud-btn" id="btn-add-node" title="New Node">+ NODE</button>
-      <button class="hud-btn accent" id="btn-autoconnect" title="AI Auto-Connect">⚡ AUTO-LINK</button>
-      <button class="hud-btn" id="btn-memory" title="Memory Core">🧠 MEMORY</button>
+      <button class="hud-btn" id="btn-add-node" title="New Node (Ctrl+N)">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        NODE
+      </button>
+      <button class="hud-btn" id="btn-connect-mode" title="Connect two nodes">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="2.5" cy="2.5" r="1.8" stroke="currentColor" stroke-width="1.2"/><circle cx="9.5" cy="9.5" r="1.8" stroke="currentColor" stroke-width="1.2"/><path d="M4 4l4 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+        LINK
+      </button>
+      <button class="hud-btn accent" id="btn-autoconnect" title="AI Auto-Connect all nodes">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1L7.5 4.5H11L8.25 6.75L9.5 10.5L6 8.25L2.5 10.5L3.75 6.75L1 4.5H4.5L6 1Z" fill="currentColor" opacity="0.9"/></svg>
+        AUTO-LINK
+      </button>
+      <button class="hud-btn" id="btn-center" title="Center view">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="1" width="4" height="4" rx="1" stroke="currentColor" stroke-width="1.2"/><rect x="7" y="1" width="4" height="4" rx="1" stroke="currentColor" stroke-width="1.2"/><rect x="1" y="7" width="4" height="4" rx="1" stroke="currentColor" stroke-width="1.2"/><rect x="7" y="7" width="4" height="4" rx="1" stroke="currentColor" stroke-width="1.2"/></svg>
+      </button>
+      <button class="hud-btn" id="btn-memory" title="Memory Core">
+        <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.2"/><circle cx="7" cy="7" r="2.5" stroke="currentColor" stroke-width="1.2"/><path d="M7 1.5V4M7 10v2.5M1.5 7H4M10 7h2.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+        MEMORY
+      </button>
       <div class="time-display" id="live-time"></div>
     </div>
   </div>
 
-  <!-- SIDE PANEL: Node Types -->
+  <!-- LEFT SIDE PANEL -->
   <div class="side-panel left-panel">
-    <div class="panel-header">UNIVERSE FILTERS</div>
+    <div class="panel-header">FILTERS</div>
     <div class="filter-list">
-      <button class="filter-btn active" data-type="all">◈ ALL</button>
-      <button class="filter-btn" data-type="concept">◈ CONCEPTS</button>
-      <button class="filter-btn" data-type="idea">◈ IDEAS</button>
-      <button class="filter-btn" data-type="memory">◈ MEMORIES</button>
-      <button class="filter-btn" data-type="topic">◈ TOPICS</button>
-      <button class="filter-btn" data-type="research">◈ RESEARCH</button>
+      <button class="filter-btn active" data-type="all">
+        <span class="filter-dot" style="background:#00c8ff"></span>ALL
+      </button>
+      <button class="filter-btn" data-type="concept">
+        <span class="filter-dot" style="background:#00c8ff"></span>CONCEPT
+      </button>
+      <button class="filter-btn" data-type="idea">
+        <span class="filter-dot" style="background:#7fff3e"></span>IDEA
+      </button>
+      <button class="filter-btn" data-type="memory">
+        <span class="filter-dot" style="background:#ff7040"></span>MEMORY
+      </button>
+      <button class="filter-btn" data-type="topic">
+        <span class="filter-dot" style="background:#c060ff"></span>TOPIC
+      </button>
+      <button class="filter-btn" data-type="research">
+        <span class="filter-dot" style="background:#ffc840"></span>RESEARCH
+      </button>
     </div>
-    <div class="panel-header" style="margin-top:20px">RECENT NODES</div>
+
+    <div class="panel-header" style="margin-top:18px">RECENT</div>
     <div id="recent-list" class="recent-list"></div>
-    <div class="panel-header" style="margin-top:20px">CONTROLS</div>
+
+    <div class="panel-header" style="margin-top:18px">CONTROLS</div>
     <div class="control-hints">
-      <div>DRAG — move nodes</div>
-      <div>CLICK — select node</div>
-      <div>DBL-CLICK — canvas to add</div>
-      <div>SCROLL — zoom universe</div>
-      <div>SHIFT+CLICK — connect nodes</div>
+      <div><span class="hint-key">DRAG</span> move node</div>
+      <div><span class="hint-key">CLICK</span> select</div>
+      <div><span class="hint-key">DBL</span> canvas → add</div>
+      <div><span class="hint-key">SCROLL</span> zoom</div>
+      <div><span class="hint-key">SHIFT</span> connect mode</div>
+      <div><span class="hint-key">N</span> new node</div>
+      <div><span class="hint-key">ESC</span> deselect</div>
     </div>
   </div>
 
   <!-- MAIN CANVAS -->
   <canvas id="universe-canvas"></canvas>
 
+  <!-- MINIMAP -->
+  <div id="minimap">
+    <canvas id="minimap-canvas"></canvas>
+    <div class="minimap-label">MINIMAP</div>
+  </div>
+
   <!-- NODE DETAIL PANEL -->
   <div class="detail-panel hidden" id="detail-panel">
     <div class="dp-header">
-      <div class="dp-type-badge" id="dp-type">CONCEPT</div>
-      <button class="dp-close" id="dp-close">✕</button>
+      <div class="dp-type-badge" id="dp-type">
+        <svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3" fill="currentColor" opacity="0.7"/></svg>
+        CONCEPT
+      </div>
+      <button class="dp-close" id="dp-close" title="Close">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
     </div>
+
     <div class="dp-title" id="dp-title" contenteditable="true">Node Title</div>
     <div class="dp-content" id="dp-content" contenteditable="true" placeholder="Add notes, thoughts, details..."></div>
     <div class="dp-tags" id="dp-tags"></div>
+
     <div class="dp-actions">
-      <button class="dp-btn" id="dp-save">SAVE</button>
-      <button class="dp-btn accent" id="dp-expand">⚡ AI EXPAND</button>
-      <button class="dp-btn" id="dp-search">🔍 RESEARCH</button>
-      <button class="dp-btn danger" id="dp-delete">DELETE</button>
+      <button class="dp-btn" id="dp-save">
+        <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 6.5l3 3 5-6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        SAVE
+      </button>
+      <button class="dp-btn accent" id="dp-expand">
+        <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M6 1L7.2 4.4H11L8 6.6L9.2 10L6 7.8L2.8 10L4 6.6L1 4.4H4.8L6 1Z" fill="currentColor"/></svg>
+        AI EXPAND
+      </button>
+      <button class="dp-btn" id="dp-search">
+        <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><circle cx="5" cy="5" r="3.5" stroke="currentColor" stroke-width="1.3"/><path d="M7.5 7.5l3 3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        RESEARCH
+      </button>
+      <button class="dp-btn danger" id="dp-delete">
+        <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 3h8M5 3V2h2v1M4 3v6.5M8 3v6.5M3 3l.5 7.5h5L9 3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        DELETE
+      </button>
     </div>
+
     <div class="dp-connections">
       <div class="panel-header">CONNECTIONS</div>
       <div id="dp-conn-list"></div>
@@ -98,49 +162,73 @@
   <!-- AI CHAT PANEL -->
   <div class="chat-panel hidden" id="chat-panel">
     <div class="chat-header">
-      <div class="chat-title">◈ MAX INTELLIGENCE CORE</div>
-      <button class="dp-close" id="chat-close">✕</button>
+      <div class="chat-title">
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="4" stroke="currentColor" stroke-width="1.2"/><circle cx="5" cy="5" r="1.5" fill="currentColor"/></svg>
+        MAX INTELLIGENCE CORE
+      </div>
+      <button class="dp-close" id="chat-close">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
     </div>
     <div class="chat-messages" id="chat-messages">
       <div class="chat-msg assistant">
-        <span class="msg-prefix">MAX //</span> Universe online. All systems nominal. What do you want to explore?
+        <span class="msg-prefix">MAX //</span>Universe online. All systems nominal. What do you want to explore?
       </div>
     </div>
     <div class="chat-input-row">
-      <input type="text" id="chat-input" placeholder="Ask MAX anything about your universe...">
-      <button id="chat-send">SEND</button>
+      <input type="text" id="chat-input" placeholder="Ask MAX anything about your universe..." spellcheck="false">
+      <button id="chat-send">
+        <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M1 1l10 5-10 5V7.5l7-1.5-7-1.5V1z" fill="currentColor"/></svg>
+        SEND
+      </button>
     </div>
   </div>
 
   <!-- MEMORY PANEL -->
   <div class="memory-panel hidden" id="memory-panel">
     <div class="chat-header">
-      <div class="chat-title">🧠 MEMORY CORE</div>
-      <button class="dp-close" id="mem-close">✕</button>
+      <div class="chat-title">
+        <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.2"/><circle cx="7" cy="7" r="2" fill="currentColor" opacity="0.6"/><path d="M7 1.5V4M7 10v2.5M1.5 7H4M10 7h2.5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>
+        MEMORY CORE
+      </div>
+      <button class="dp-close" id="mem-close">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
     </div>
     <div class="mem-add-row">
-      <input type="text" id="mem-key" placeholder="Key (e.g. My Goal)">
-      <input type="text" id="mem-val" placeholder="Value (e.g. Build AGI)">
+      <input type="text" id="mem-key" placeholder="Key (e.g. My Goal)" spellcheck="false">
+      <input type="text" id="mem-val" placeholder="Value" spellcheck="false">
       <select id="mem-cat">
         <option value="general">General</option>
         <option value="personal">Personal</option>
         <option value="goal">Goal</option>
         <option value="fact">Fact</option>
       </select>
-      <button id="mem-add-btn">+ ADD</button>
+      <button id="mem-add-btn">
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5 1v8M1 5h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        ADD
+      </button>
     </div>
     <div id="memory-list" class="memory-list"></div>
   </div>
 
-  <!-- SEARCH RESULTS PANEL -->
+  <!-- SEARCH / RESEARCH PANEL -->
   <div class="search-panel hidden" id="search-panel">
     <div class="chat-header">
-      <div class="chat-title">🔍 LIVE RESEARCH</div>
-      <button class="dp-close" id="search-close">✕</button>
+      <div class="chat-title">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="5" cy="5" r="3.8" stroke="currentColor" stroke-width="1.2"/><path d="M8 8l3 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        LIVE RESEARCH
+      </div>
+      <button class="dp-close" id="search-close">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
     </div>
     <div class="search-input-row">
-      <input type="text" id="search-query" placeholder="Search the web...">
-      <button id="search-exec">SEARCH</button>
+      <input type="text" id="search-query" placeholder="Search the web..." spellcheck="false">
+      <button id="search-exec">
+        <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><circle cx="5" cy="5" r="3.5" stroke="currentColor" stroke-width="1.3"/><path d="M7.5 7.5l3 3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        SEARCH
+      </button>
     </div>
     <div id="search-results" class="search-results"></div>
   </div>
@@ -148,16 +236,22 @@
   <!-- TOAST -->
   <div id="toast" class="toast hidden"></div>
 
-  <!-- CHAT TOGGLE -->
-  <button class="chat-toggle" id="chat-toggle">◈ ASK MAX</button>
+  <!-- CHAT TOGGLE BUTTON -->
+  <button class="chat-toggle" id="chat-toggle">
+    <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.2"/><circle cx="7" cy="7" r="2" fill="currentColor" opacity="0.7"/></svg>
+    ASK MAX
+  </button>
 
 </div><!-- /hud -->
 
-<!-- ADD NODE MODAL -->
+<!-- CREATE NODE MODAL -->
 <div class="modal-overlay hidden" id="add-modal">
   <div class="modal">
-    <div class="modal-title">CREATE NODE</div>
-    <input type="text" id="new-title" placeholder="Node title..." class="modal-input">
+    <div class="modal-title">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      CREATE NODE
+    </div>
+    <input type="text" id="new-title" placeholder="Node title..." class="modal-input" spellcheck="false" autocomplete="off">
     <textarea id="new-content" placeholder="Content / notes..." class="modal-textarea"></textarea>
     <select id="new-type" class="modal-select">
       <option value="concept">Concept</option>
@@ -166,10 +260,13 @@
       <option value="topic">Topic</option>
       <option value="research">Research</option>
     </select>
-    <input type="text" id="new-tags" placeholder="Tags (comma separated)" class="modal-input">
+    <input type="text" id="new-tags" placeholder="Tags — comma separated" class="modal-input" spellcheck="false">
     <div class="modal-actions">
       <button class="dp-btn" id="modal-cancel">CANCEL</button>
-      <button class="dp-btn accent" id="modal-create">CREATE NODE</button>
+      <button class="dp-btn accent" id="modal-create">
+        <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        CREATE
+      </button>
     </div>
   </div>
 </div>
