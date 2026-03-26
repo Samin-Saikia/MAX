@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MAX — Knowledge Universe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&family=Exo+2:wght@100;200;300;400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+<!-- BOOT SCREEN -->
+<div id="boot-screen">
+  <div class="boot-content">
+    <div class="boot-logo">M<span>A</span>X</div>
+    <div class="boot-sub">KNOWLEDGE UNIVERSE SYSTEM</div>
+    <div class="boot-bar"><div class="boot-progress"></div></div>
+    <div class="boot-log" id="boot-log"></div>
+  </div>
+</div>
+
+<!-- HUD OVERLAY -->
+<div id="hud" class="hidden">
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="tb-left">
+      <div class="logo-small">M<span>A</span>X</div>
+      <div class="sys-stats">
+        <span id="node-count">0 NODES</span>
+        <span class="sep">|</span>
+        <span id="edge-count">0 LINKS</span>
+        <span class="sep">|</span>
+        <span id="mem-count">0 MEMORIES</span>
+      </div>
+    </div>
+    <div class="tb-center">
+      <input type="text" id="cmd-bar" placeholder="// COMMAND — search, ask, or create..." autocomplete="off">
+      <button class="cmd-btn" id="cmd-exec">EXECUTE</button>
+    </div>
+    <div class="tb-right">
+      <button class="hud-btn" id="btn-add-node" title="New Node">+ NODE</button>
+      <button class="hud-btn accent" id="btn-autoconnect" title="AI Auto-Connect">⚡ AUTO-LINK</button>
+      <button class="hud-btn" id="btn-memory" title="Memory Core">🧠 MEMORY</button>
+      <div class="time-display" id="live-time"></div>
+    </div>
+  </div>
+
+  <!-- SIDE PANEL: Node Types -->
+  <div class="side-panel left-panel">
+    <div class="panel-header">UNIVERSE FILTERS</div>
+    <div class="filter-list">
+      <button class="filter-btn active" data-type="all">◈ ALL</button>
+      <button class="filter-btn" data-type="concept">◈ CONCEPTS</button>
+      <button class="filter-btn" data-type="idea">◈ IDEAS</button>
+      <button class="filter-btn" data-type="memory">◈ MEMORIES</button>
+      <button class="filter-btn" data-type="topic">◈ TOPICS</button>
+      <button class="filter-btn" data-type="research">◈ RESEARCH</button>
+    </div>
+    <div class="panel-header" style="margin-top:20px">RECENT NODES</div>
+    <div id="recent-list" class="recent-list"></div>
+    <div class="panel-header" style="margin-top:20px">CONTROLS</div>
+    <div class="control-hints">
+      <div>DRAG — move nodes</div>
+      <div>CLICK — select node</div>
+      <div>DBL-CLICK — canvas to add</div>
+      <div>SCROLL — zoom universe</div>
+      <div>SHIFT+CLICK — connect nodes</div>
+    </div>
+  </div>
+
+  <!-- MAIN CANVAS -->
+  <canvas id="universe-canvas"></canvas>
+
+  <!-- NODE DETAIL PANEL -->
+  <div class="detail-panel hidden" id="detail-panel">
+    <div class="dp-header">
+      <div class="dp-type-badge" id="dp-type">CONCEPT</div>
+      <button class="dp-close" id="dp-close">✕</button>
+    </div>
+    <div class="dp-title" id="dp-title" contenteditable="true">Node Title</div>
+    <div class="dp-content" id="dp-content" contenteditable="true" placeholder="Add notes, thoughts, details..."></div>
+    <div class="dp-tags" id="dp-tags"></div>
+    <div class="dp-actions">
+      <button class="dp-btn" id="dp-save">SAVE</button>
+      <button class="dp-btn accent" id="dp-expand">⚡ AI EXPAND</button>
+      <button class="dp-btn" id="dp-search">🔍 RESEARCH</button>
+      <button class="dp-btn danger" id="dp-delete">DELETE</button>
+    </div>
+    <div class="dp-connections">
+      <div class="panel-header">CONNECTIONS</div>
+      <div id="dp-conn-list"></div>
+    </div>
+    <div class="dp-ai-result hidden" id="dp-ai-result"></div>
+  </div>
+
+  <!-- AI CHAT PANEL -->
+  <div class="chat-panel hidden" id="chat-panel">
+    <div class="chat-header">
+      <div class="chat-title">◈ MAX INTELLIGENCE CORE</div>
+      <button class="dp-close" id="chat-close">✕</button>
+    </div>
+    <div class="chat-messages" id="chat-messages">
+      <div class="chat-msg assistant">
+        <span class="msg-prefix">MAX //</span> Universe online. All systems nominal. What do you want to explore?
+      </div>
+    </div>
+    <div class="chat-input-row">
+      <input type="text" id="chat-input" placeholder="Ask MAX anything about your universe...">
+      <button id="chat-send">SEND</button>
+    </div>
+  </div>
+
+  <!-- MEMORY PANEL -->
+  <div class="memory-panel hidden" id="memory-panel">
+    <div class="chat-header">
+      <div class="chat-title">🧠 MEMORY CORE</div>
+      <button class="dp-close" id="mem-close">✕</button>
+    </div>
+    <div class="mem-add-row">
+      <input type="text" id="mem-key" placeholder="Key (e.g. My Goal)">
+      <input type="text" id="mem-val" placeholder="Value (e.g. Build AGI)">
+      <select id="mem-cat">
+        <option value="general">General</option>
+        <option value="personal">Personal</option>
+        <option value="goal">Goal</option>
+        <option value="fact">Fact</option>
+      </select>
+      <button id="mem-add-btn">+ ADD</button>
+    </div>
+    <div id="memory-list" class="memory-list"></div>
+  </div>
+
+  <!-- SEARCH RESULTS PANEL -->
+  <div class="search-panel hidden" id="search-panel">
+    <div class="chat-header">
+      <div class="chat-title">🔍 LIVE RESEARCH</div>
+      <button class="dp-close" id="search-close">✕</button>
+    </div>
+    <div class="search-input-row">
+      <input type="text" id="search-query" placeholder="Search the web...">
+      <button id="search-exec">SEARCH</button>
+    </div>
+    <div id="search-results" class="search-results"></div>
+  </div>
+
+  <!-- TOAST -->
+  <div id="toast" class="toast hidden"></div>
+
+  <!-- CHAT TOGGLE -->
+  <button class="chat-toggle" id="chat-toggle">◈ ASK MAX</button>
+
+</div><!-- /hud -->
+
+<!-- ADD NODE MODAL -->
+<div class="modal-overlay hidden" id="add-modal">
+  <div class="modal">
+    <div class="modal-title">CREATE NODE</div>
+    <input type="text" id="new-title" placeholder="Node title..." class="modal-input">
+    <textarea id="new-content" placeholder="Content / notes..." class="modal-textarea"></textarea>
+    <select id="new-type" class="modal-select">
+      <option value="concept">Concept</option>
+      <option value="idea">Idea</option>
+      <option value="memory">Memory</option>
+      <option value="topic">Topic</option>
+      <option value="research">Research</option>
+    </select>
+    <input type="text" id="new-tags" placeholder="Tags (comma separated)" class="modal-input">
+    <div class="modal-actions">
+      <button class="dp-btn" id="modal-cancel">CANCEL</button>
+      <button class="dp-btn accent" id="modal-create">CREATE NODE</button>
+    </div>
+  </div>
+</div>
+
+<script src="/static/js/universe.js"></script>
+<script src="/static/js/app.js"></script>
+</body>
+</html>
