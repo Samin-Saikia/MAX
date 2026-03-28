@@ -7,6 +7,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&family=Exo+2:wght@100;200;300;400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/static/css/style.css">
+<!-- PDF.js for PDF text extraction -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>if(window.pdfjsLib) pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
 </head>
 <body>
 
@@ -39,27 +42,31 @@
       </div>
     </div>
     <div class="tb-center">
-      <input type="text" id="cmd-bar" placeholder="// COMMAND — add, search, ask, connect..." autocomplete="off" spellcheck="false">
+      <input type="text" id="cmd-bar" placeholder="// COMMAND — add, search, ask, connect, timetable..." autocomplete="off" spellcheck="false">
       <button class="cmd-btn" id="cmd-exec">
         <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 2l8 4-8 4V2z" fill="currentColor"/></svg>
         RUN
       </button>
     </div>
     <div class="tb-right">
-      <button class="hud-btn" id="btn-add-node" title="New Node (Ctrl+N)">
+      <button class="hud-btn" id="btn-add-node" title="New Node (N)">
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
         NODE
       </button>
-      <button class="hud-btn" id="btn-connect-mode" title="Connect two nodes">
+      <button class="hud-btn" id="btn-connect-mode" title="Connect two nodes (Shift+C)">
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="2.5" cy="2.5" r="1.8" stroke="currentColor" stroke-width="1.2"/><circle cx="9.5" cy="9.5" r="1.8" stroke="currentColor" stroke-width="1.2"/><path d="M4 4l4 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
         LINK
       </button>
-      <button class="hud-btn accent" id="btn-autoconnect" title="AI Auto-Connect all nodes">
+      <button class="hud-btn accent" id="btn-autoconnect" title="AI Auto-Connect">
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1L7.5 4.5H11L8.25 6.75L9.5 10.5L6 8.25L2.5 10.5L3.75 6.75L1 4.5H4.5L6 1Z" fill="currentColor" opacity="0.9"/></svg>
         AUTO-LINK
       </button>
-      <button class="hud-btn" id="btn-center" title="Center view">
+      <button class="hud-btn" id="btn-center" title="Center view (Space)">
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="1" width="4" height="4" rx="1" stroke="currentColor" stroke-width="1.2"/><rect x="7" y="1" width="4" height="4" rx="1" stroke="currentColor" stroke-width="1.2"/><rect x="1" y="7" width="4" height="4" rx="1" stroke="currentColor" stroke-width="1.2"/><rect x="7" y="7" width="4" height="4" rx="1" stroke="currentColor" stroke-width="1.2"/></svg>
+      </button>
+      <button class="hud-btn" id="btn-timetable" title="Day Planner & Timetable">
+        <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><rect x="1.5" y="2.5" width="11" height="10" rx="1.2" stroke="currentColor" stroke-width="1.2"/><path d="M1.5 5.5h11M4.5 1.5v2M9.5 1.5v2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><circle cx="5" cy="8.5" r="0.8" fill="currentColor"/><circle cx="7" cy="8.5" r="0.8" fill="currentColor"/><circle cx="9" cy="8.5" r="0.8" fill="currentColor"/></svg>
+        DAY
       </button>
       <button class="hud-btn" id="btn-memory" title="Memory Core">
         <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.2"/><circle cx="7" cy="7" r="2.5" stroke="currentColor" stroke-width="1.2"/><path d="M7 1.5V4M7 10v2.5M1.5 7H4M10 7h2.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
@@ -102,7 +109,7 @@
       <div><span class="hint-key">CLICK</span> select</div>
       <div><span class="hint-key">DBL</span> canvas → add</div>
       <div><span class="hint-key">SCROLL</span> zoom</div>
-      <div><span class="hint-key">SHIFT</span> connect mode</div>
+      <div><span class="hint-key">SHIFT+C</span> connect</div>
       <div><span class="hint-key">N</span> new node</div>
       <div><span class="hint-key">ESC</span> deselect</div>
     </div>
@@ -166,17 +173,44 @@
         <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="4" stroke="currentColor" stroke-width="1.2"/><circle cx="5" cy="5" r="1.5" fill="currentColor"/></svg>
         MAX INTELLIGENCE CORE
       </div>
-      <button class="dp-close" id="chat-close">
-        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <div style="display:flex;align-items:center;gap:6px">
+        <button class="hud-btn" id="chat-clear-btn" title="Clear chat history" style="font-size:9px;padding:3px 7px;gap:4px">
+          <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 3h8M5 3V2h2v1M4 3v6.5M8 3v6.5M3 3l.5 7h5L9 3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          CLEAR
+        </button>
+        <button class="dp-close" id="chat-close">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Personality + Context Mode Row -->
+    <div class="personality-bar" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+      <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><circle cx="5" cy="3" r="2" stroke="currentColor" stroke-width="1.1"/><path d="M1 8.5c0-2 1.8-3.5 4-3.5s4 1.5 4 3.5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>
+      <select id="personality-select" class="personality-select" style="flex:1;min-width:0">
+        <option value="max">MAX — JARVIS-style AI core</option>
+      </select>
+      <button id="chat-ctx-toggle" class="hud-btn" title="Toggle free chat vs node context" style="font-size:9px;padding:3px 7px;flex-shrink:0;white-space:nowrap">
+        <svg width="9" height="9" viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="4" stroke="currentColor" stroke-width="1.2"/><path d="M5 3v4M3 5h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+        <span id="ctx-mode-label">FREE CHAT</span>
       </button>
     </div>
+
     <div class="chat-messages" id="chat-messages">
       <div class="chat-msg assistant">
         <span class="msg-prefix">MAX //</span>Universe online. All systems nominal. What do you want to explore?
       </div>
     </div>
+
+    <!-- Attachment Preview -->
+    <div id="attachment-preview" class="attachment-preview"></div>
+
     <div class="chat-input-row">
-      <input type="text" id="chat-input" placeholder="Ask MAX anything about your universe..." spellcheck="false">
+      <button id="chat-attach-btn" class="chat-attach-btn" title="Attach image or PDF">
+        <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M12 7.5l-5.5 5.5a3.5 3.5 0 01-5-5l6-6a2 2 0 012.8 2.8L5 10a.5.5 0 01-.7-.7L9.5 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <input type="file" id="chat-file-input" accept="image/*,.pdf" style="display:none">
+      <input type="text" id="chat-input" placeholder="Ask MAX anything... (or drop an image/PDF)" spellcheck="false">
       <button id="chat-send">
         <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M1 1l10 5-10 5V7.5l7-1.5-7-1.5V1z" fill="currentColor"/></svg>
         SEND
@@ -223,14 +257,137 @@
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
       </button>
     </div>
-    <div class="search-input-row">
-      <input type="text" id="search-query" placeholder="Search the web..." spellcheck="false">
-      <button id="search-exec">
-        <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><circle cx="5" cy="5" r="3.5" stroke="currentColor" stroke-width="1.3"/><path d="M7.5 7.5l3 3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-        SEARCH
+
+    <!-- Research Tabs -->
+    <div id="research-tab-bar" class="research-tab-bar">
+      <button id="tab-blog" class="research-tab active">
+        <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><rect x="1" y="1" width="10" height="10" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M3 4h6M3 6h6M3 8h4" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg>
+        WEB RESULTS
+      </button>
+      <button id="tab-chat" class="research-tab">
+        <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.2"/><circle cx="6" cy="6" r="1.5" fill="currentColor"/></svg>
+        AI RESEARCH CHAT
       </button>
     </div>
-    <div id="search-results" class="search-results"></div>
+
+    <!-- Blog/Web Results View -->
+    <div id="research-blog-view">
+      <div class="search-input-row">
+        <input type="text" id="search-query" placeholder="Search the web..." spellcheck="false">
+        <button id="search-exec">
+          <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><circle cx="5" cy="5" r="3.5" stroke="currentColor" stroke-width="1.3"/><path d="M7.5 7.5l3 3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+          SEARCH
+        </button>
+      </div>
+      <div id="search-results" class="search-results"></div>
+    </div>
+
+    <!-- AI Research Chat View -->
+    <div id="research-chat-view" class="hidden" style="display:flex;flex-direction:column;flex:1;overflow:hidden;">
+      <div id="research-chat-messages" class="chat-messages" style="flex:1;">
+        <div class="chat-msg assistant">
+          <span class="msg-prefix">RESEARCH //</span>Ask me anything. I'll search the web and synthesize an answer for you.
+        </div>
+      </div>
+      <div class="chat-input-row">
+        <input type="text" id="research-chat-input" placeholder="Ask a research question..." spellcheck="false">
+        <button id="research-chat-send">
+          <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M1 1l10 5-10 5V7.5l7-1.5-7-1.5V1z" fill="currentColor"/></svg>
+          ASK
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TIMETABLE / DAY MANAGER PANEL -->
+  <div class="timetable-panel hidden" id="timetable-panel">
+    <div class="chat-header">
+      <div class="chat-title">
+        <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><rect x="1.5" y="2.5" width="11" height="10" rx="1.2" stroke="currentColor" stroke-width="1.2"/><path d="M1.5 5.5h11M4.5 1.5v2M9.5 1.5v2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+        DAY PLANNER
+      </div>
+      <button class="dp-close" id="tt-close">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+
+    <div class="tt-scroll">
+      <!-- Date Navigation -->
+      <div class="tt-date-nav">
+        <button class="tt-nav-btn" id="tt-prev-day">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M6 2L3 5l3 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="tt-date-center">
+          <div id="tt-date-display" class="tt-date-display">Today</div>
+          <input type="date" id="tt-date-input" class="tt-date-input">
+        </div>
+        <button class="tt-nav-btn" id="tt-next-day">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M4 2l3 3-3 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+
+      <!-- Streak Counter -->
+      <div class="tt-streak-bar">
+        <div id="streak-count" class="streak-count">0 DAY STREAK 🔥</div>
+        <div class="tt-checkin-row">
+          <input type="text" id="tt-checkin-note" placeholder="Daily note..." class="tt-checkin-input">
+          <button id="tt-checkin-btn" class="tt-checkin-btn">CHECK IN</button>
+        </div>
+      </div>
+
+      <!-- Calendar -->
+      <div class="panel-header" style="margin-bottom:8px">STREAK CALENDAR</div>
+      <div id="streak-calendar" class="streak-calendar"></div>
+
+      <!-- Task List -->
+      <div class="tt-task-header">
+        <div class="panel-header">TODAY'S TASKS</div>
+        <button id="tt-add-task-btn" class="tt-icon-btn" title="Add task">
+          <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M5.5 1v9M1 5.5h9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+
+      <!-- Add Task Form -->
+      <div id="tt-add-form" class="tt-add-form hidden">
+        <input type="text" id="tt-task-title" placeholder="Task title..." class="tt-input">
+        <input type="text" id="tt-task-desc" placeholder="Description (optional)..." class="tt-input">
+        <div class="tt-form-row">
+          <input type="time" id="tt-task-start" class="tt-input-sm" placeholder="Start">
+          <input type="time" id="tt-task-end" class="tt-input-sm" placeholder="End">
+        </div>
+        <div class="tt-form-row">
+          <select id="tt-task-cat" class="tt-select">
+            <option value="general">General</option>
+            <option value="work">Work</option>
+            <option value="learning">Learning</option>
+            <option value="health">Health</option>
+            <option value="personal">Personal</option>
+            <option value="creative">Creative</option>
+          </select>
+          <select id="tt-task-priority" class="tt-select">
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+            <option value="low">Low</option>
+          </select>
+        </div>
+        <button id="tt-save-task" class="tt-save-btn">
+          <svg width="10" height="10" viewBox="0 0 11 11" fill="none"><path d="M1.5 5.5l3 3 5-6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          SAVE TASK
+        </button>
+      </div>
+
+      <div id="task-list" class="task-list"></div>
+
+      <!-- AI Day Planner -->
+      <div class="panel-header" style="margin-top:18px;margin-bottom:8px">AI DAY PLANNER</div>
+      <div class="tt-ai-section">
+        <textarea id="tt-ai-desc" class="tt-ai-desc" placeholder="Describe your day... e.g. 'I need to finish the project report, hit the gym, study Python for 2 hours, and have a call at 3pm'"></textarea>
+        <button id="tt-ai-plan-btn" class="tt-ai-plan-btn">
+          <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M6 1L7.2 4.4H11L8 6.6L9.2 10L6 7.8L2.8 10L4 6.6L1 4.4H4.8L6 1Z" fill="currentColor"/></svg>
+          AI PLAN MY DAY
+        </button>
+      </div>
+    </div>
   </div>
 
   <!-- TOAST -->
